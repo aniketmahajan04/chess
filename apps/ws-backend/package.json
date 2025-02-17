@@ -17,6 +17,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "chess.js": "^1.0.0",
     "ws": "^8.18.0"
   }
 }
