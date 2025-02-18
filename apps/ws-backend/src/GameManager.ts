@@ -4,12 +4,14 @@ import { Game } from "./Game";
  
 export class GameManager{
     private users: Users[];
-    private game: Game[];
+    private games: Game[];
+    private pendingGameId: string | null;
 
 
     constructor(){
         this.users = [];
-        this.game = [];
+        this.games = [];
+        this.pendingGameId = null;
     }
 
     addUser(user: Users) {
@@ -35,13 +37,23 @@ export class GameManager{
             const message = JSON.parse(data.toString());
             if(message.type === "INIT_GAME"){
                 const game = new Game(user.userId, null);
+                this.games.push(game);
+                this.pendingGameId = game.gameId;
+                this.users.forEach((user) => {
+                    if(user.userId === game.player1UserId){
+                        user.socket.send(JSON.stringify({
+                            type: "GAME_ADDED",
+                            gameId: game.gameId
+                        }))
+                    }
+                })
             }
 
             if(message.type === "MOVE"){
-                const gameId = message.payload.gameId();
-                const game = this.game.filter((game) => gameId === game.gameId);
+                const gameId = message.payload.gameId;
+                const game = this.games.find((game) => gameId === game.gameId);
                 if(game){
-                    game.makeMove(user, message.payload.move)
+                    game.makeMove(user, message.payload.move);
                 }
             }
 
