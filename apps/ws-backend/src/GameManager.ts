@@ -36,9 +36,12 @@ export class GameManager{
         user.socket.on("message", (data) => {
             const message = JSON.parse(data.toString());
             if(message.type === "INIT_GAME"){
+
                 const game = new Game(user.userId, null);
+
                 this.games.push(game);
                 this.pendingGameId = game.gameId;
+                
                 this.users.forEach((user) => {
                     if(user.userId === game.player1UserId){
                         user.socket.send(JSON.stringify({
@@ -54,6 +57,7 @@ export class GameManager{
                 const game = this.games.find((game) => gameId === game.gameId);
                 if(game){
                     game.makeMove(user, message.payload.move);
+                    
                 }
             }
 
