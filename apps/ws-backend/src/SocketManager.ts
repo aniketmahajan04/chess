@@ -56,7 +56,30 @@ class SocketManager {
         });
     }
 
-    removeUser(){
-        
+    removeUser(user: Users){
+        const roomId = this.userRoomMapping.get(user.userId);
+        if(!roomId){
+            console.error("User not interesting in any room?");
+            return;
+        }
+
+        const room = this.interestedSockets.get(roomId) || [];
+        const remainingUsers = room.filter(u => {
+            u.userId !== user.userId
+        });
+
+        this.interestedSockets.set(
+            roomId,
+            remainingUsers
+        )
+
+        if(this.interestedSockets.get(roomId)?.length === 0){
+            this.interestedSockets.delete(roomId);
+        }
+
+        this.userRoomMapping.delete(user.userId);
+
     }
 }
+
+export const socketManager = SocketManager.getInstance();
