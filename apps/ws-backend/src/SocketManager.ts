@@ -64,9 +64,9 @@ class SocketManager {
         }
 
         const room = this.interestedSockets.get(roomId) || [];
-        const remainingUsers = room.filter(u => {
+        const remainingUsers = room.filter(u => 
             u.userId !== user.userId
-        });
+        );
 
         this.interestedSockets.set(
             roomId,

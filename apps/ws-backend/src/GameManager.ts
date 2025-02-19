@@ -1,6 +1,13 @@
 import { WebSocket } from "ws";
-import { Users } from "./SocketManager";
+import { socketManager, Users } from "./SocketManager";
 import { Game } from "./Game";
+
+import { 
+    GAME_ADDED,
+    GAME_ALERT,
+    INIT_GAME,
+    MOVE
+    } from "./messages"
  
 export class GameManager{
     private users: Users[];
@@ -35,21 +42,44 @@ export class GameManager{
     private addHandler(user: Users){
         user.socket.on("message", (data) => {
             const message = JSON.parse(data.toString());
-            if(message.type === "INIT_GAME"){
-
-                const game = new Game(user.userId, null);
-
-                this.games.push(game);
-                this.pendingGameId = game.gameId;
-                
-                this.users.forEach((user) => {
-                    if(user.userId === game.player1UserId){
-                        user.socket.send(JSON.stringify({
-                            type: "GAME_ADDED",
-                            gameId: game.gameId
-                        }))
+            if(message.type === INIT_GAME){
+                if(this.pendingGameId){
+                    const game = this.games.find((x) => { x.gameId === this.pendingGameId });
+                    if(!game){
+                        console.error("Pending game not found");
+                        return;
                     }
-                })
+
+                    if(user.userId === game.player1UserId){
+                        socketManager.broadcast(
+                            game.gameId,
+                            JSON.stringify({
+                                type: GAME_ALERT,
+                                payload: {
+                                    message: "Trying to connect with yourself!"
+                                }
+                            })
+                        );
+                        return;
+                    }
+                    socketManager.addUser(user, game.gameId);
+                    //update second player to play
+                    this.pendingGameId = null;
+                } else{
+                    const game = new Game(user.userId, null);
+
+                    this.games.push(game);
+                    this.pendingGameId = game.gameId;
+
+                    socketManager.addUser(user, game.gameId);
+                    socketManager.broadcast(
+                        game.gameId,
+                        JSON.stringify({
+                            type: GAME_ADDED,
+                            gameId: game.gameId
+                        })
+                    );
+                }
             }
 
             if(message.type === "MOVE"){
