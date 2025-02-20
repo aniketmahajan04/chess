@@ -73,9 +73,18 @@ importers:
 
   apps/ws-backend:
     dependencies:
+      '@prisma/client':
+        specifier: 6.3.1
+        version: 6.3.1(prisma@6.3.1(typescript@5.7.3))(typescript@5.7.3)
+      '@repo/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       chess.js:
         specifier: ^1.0.0
         version: 1.0.0
+      prisma:
+        specifier: ^6.3.1
+        version: 6.3.1(typescript@5.7.3)
       ws:
         specifier: ^8.18.0
         version: 8.18.0
