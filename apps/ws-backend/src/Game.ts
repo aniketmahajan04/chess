@@ -2,6 +2,7 @@ import { Chess, Move } from "chess.js";
 import { randomUUID } from "crypto";
 import { socketManager, Users } from "./SocketManager";
 import { INIT_GAME } from "./messages";
+import { db } from "./db";
 
 
 export class Game {
@@ -9,6 +10,7 @@ export class Game {
     public player1UserId: string;
     public player2UserId: string | null;
     public chessBoard: Chess;
+    public startTime = new Date(Date.now());
 
     constructor(player1UserId: string, player2UserId: string | null, gameId?: string){
         this.player1UserId = player1UserId;
@@ -71,4 +73,36 @@ export class Game {
         );
 
     }
+
+    async createGameInDb(){
+        this.startTime = new Date(Date.now());
+        //count last move time
+
+        const game = await db.game.create({
+            data: {
+                id: this.gameId,
+                status: 'IN_PROGRESS',
+                startedAt: this.startTime,
+                currentFen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+                whitePlayer: {
+                    connect: {
+                        id: this.player1UserId
+                    },
+                },
+                blackPlayer: {
+                    connect: {
+                        id: this.player2UserId ?? ''
+                    }
+                },
+            },
+            include : {
+                whitePlayer: true,
+                blackPlayer: true
+            }
+        });
+        this.gameId = game.id;
+    }
+
+
+
 }
