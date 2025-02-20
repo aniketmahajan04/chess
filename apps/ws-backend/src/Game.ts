@@ -1,6 +1,7 @@
 import { Chess, Move } from "chess.js";
 import { randomUUID } from "crypto";
-import { Users } from "./SocketManager";
+import { socketManager, Users } from "./SocketManager";
+import { INIT_GAME } from "./messages";
 
 
 export class Game {
@@ -32,5 +33,42 @@ export class Game {
             from: move.from,
             to: move.to
         })
+    }
+
+    async getSecondPlayer(player2UserId: string){
+        this.player2UserId = player2UserId;
+
+        // find player 2 in db // find user in db
+
+        try{
+            // call createGameDb function
+        } catch(error){
+            console.error(error);
+            return;
+        }
+
+        const WhitePlayer = user.find((user) => user.id === this.player1UserId);
+        const BlackPlayer = user.find((user) => user.id === this.player2UserId);
+
+        socketManager.broadcast(
+            this.gameId,
+            JSON.stringify({
+                type: INIT_GAME,
+                payload: {
+                    gameId: this.gameId,
+                    WhitePlayer: {
+                        name: WhitePlayer.name,
+                        id: this.player1UserId,
+                    },
+                    BlackPlayer: {
+                        name: BlackPlayer.name,
+                        id: this.player2UserId 
+                    },
+                    fen: this.chessBoard.fen(),
+                    moves: []
+                },
+            }),
+        );
+
     }
 }

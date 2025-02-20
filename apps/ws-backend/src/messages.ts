@@ -7,6 +7,7 @@ const JOIN_GAME = "JOIN_GAME";
 const OPPONENT_DISCONNECT = "OPPONENT_DISCONNECT";
 const GAME_JOIN = "GAME_JOIN";
 const GAME_ALERT = "GAME_ALERT";
+const EXIT_GAME = "EXIT_GAME";
   
 export {
     INIT_GAME,
@@ -16,5 +17,6 @@ export {
     GAME_JOIN,
     JOIN_GAME,
     OPPONENT_DISCONNECT,
-    GAME_ALERT
+    GAME_ALERT,
+    EXIT_GAME
 }

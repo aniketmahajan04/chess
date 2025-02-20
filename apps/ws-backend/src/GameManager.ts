@@ -3,6 +3,7 @@ import { socketManager, Users } from "./SocketManager";
 import { Game } from "./Game";
 
 import { 
+    EXIT_GAME,
     GAME_ADDED,
     GAME_ALERT,
     INIT_GAME,
@@ -82,7 +83,7 @@ export class GameManager{
                 }
             }
 
-            if(message.type === "MOVE"){
+            if(message.type === MOVE){
                 const gameId = message.payload.gameId;
                 const game = this.games.find((game) => gameId === game.gameId);
                 if(game){
@@ -90,8 +91,10 @@ export class GameManager{
                     
                 }
             }
-
-
+            
+            if(message.type === EXIT_GAME){
+                // exit user from game and socket
+            }
 
         })
     }
