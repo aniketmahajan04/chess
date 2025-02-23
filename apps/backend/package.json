@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
+    "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.0"
   },
   "keywords": [],
@@ -17,7 +18,9 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "express": "^4.21.2",
-    "@repo/db": "workspace:*"
+    "@prisma/client": "6.3.1",
+    "@repo/db": "workspace:*",
+    "bcrypt": "^5.1.1",
+    "express": "^4.21.2"
   }
 }
