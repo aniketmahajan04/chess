@@ -49,28 +49,28 @@ export class Game {
             return;
         }
 
-        const WhitePlayer = user.find((user) => user.id === this.player1UserId);
-        const BlackPlayer = user.find((user) => user.id === this.player2UserId);
+        // const WhitePlayer = user.find((user) => user.id === this.player1UserId);
+        // const BlackPlayer = user.find((user) => user.id === this.player2UserId);
 
-        socketManager.broadcast(
-            this.gameId,
-            JSON.stringify({
-                type: INIT_GAME,
-                payload: {
-                    gameId: this.gameId,
-                    WhitePlayer: {
-                        name: WhitePlayer.name,
-                        id: this.player1UserId,
-                    },
-                    BlackPlayer: {
-                        name: BlackPlayer.name,
-                        id: this.player2UserId 
-                    },
-                    fen: this.chessBoard.fen(),
-                    moves: []
-                },
-            }),
-        );
+        // socketManager.broadcast(
+        //     this.gameId,
+        //     JSON.stringify({
+        //         type: INIT_GAME,
+        //         payload: {
+        //             gameId: this.gameId,
+        //             WhitePlayer: {
+        //                 name: WhitePlayer.name,
+        //                 id: this.player1UserId,
+        //             },
+        //             BlackPlayer: {
+        //                 name: BlackPlayer.name,
+        //                 id: this.player2UserId 
+        //             },
+        //             fen: this.chessBoard.fen(),
+        //             moves: []
+        //         },
+        //     }),
+        // );
 
     }
 
