@@ -1,6 +1,6 @@
 import { WebSocket } from "ws";
 import { randomUUID } from 'crypto';
-
+import { userJwtClaims } from "./auth";
 
 export class Users{
     public socket: WebSocket;
@@ -8,11 +8,11 @@ export class Users{
     public name: string;
     public userId: string;
 
-    constructor(socket: WebSocket, userId: string, name: string){
+    constructor(socket: WebSocket, userJwtClaims: userJwtClaims){
         this.socket = socket;
-        this.userId = userId
+        this.userId = userJwtClaims.userId
         this.id = randomUUID();
-        this.name = name;
+        this.name = userJwtClaims.name;
     }
 }
 

@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import { db } from "../db";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your_secret_password";
+const JWT_SECRET = "your_secret_password";
 
 const signup = async (req: Request, res: Response): Promise<void> => {
     const { name, email, password } = req.body;
@@ -54,21 +54,26 @@ const signin = async (req: Request, res: Response): Promise<void> => {
            })
            return;
         }
-        const isMatch = bcrypt.compare(password, foundUser?.password);
+        const isMatch = await bcrypt.compare(password, foundUser?.password);
 
         if(!isMatch){
             res.status(400).json({
                 msg: "Invalid credentials"
             });
+            return;
         }
 
-        const token = jwt.sign({
-            id: foundUser.id
-        }, JWT_SECRET);
+        const token = jwt.sign(
+            { userId: foundUser.id, name: foundUser.name },
+             JWT_SECRET,{
+                expiresIn: "1h"
+             });
 
         res.setHeader("Authorization", `Bearer ${token}`);
 
-        res.status(200).json({ msg: "Login successful" });
+        res.status(200).json({ msg: "Login successful",
+            token: token
+         });
         
     } catch(error){
         console.error("Something went wrong ", error);
