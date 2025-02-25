@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { db } from "../db";
+import jwt from "jsonwebtoken";
 
+const JWT_SECRET = process.env.JWT_SECRET || "your_secret_password";
 
 const signup = async (req: Request, res: Response): Promise<void> => {
     const { name, email, password } = req.body;
@@ -29,6 +31,55 @@ const signup = async (req: Request, res: Response): Promise<void> => {
     }
 }
 
+const signin = async (req: Request, res: Response): Promise<void> => {
+    const { email, password } = req.body;
+
+    if(typeof email !== "string" || typeof password !== "string"){
+        res.status(400).json({
+            msg: "Invalid email or password format"
+        })
+        return;
+    }
+
+    try{
+        const foundUser = await db.user.findFirst({
+            where: {
+                email
+            }
+        });
+
+        if(!foundUser || !foundUser.password){
+           res.status(404).json({
+                msg: "User not found",
+           })
+           return;
+        }
+        const isMatch = bcrypt.compare(password, foundUser?.password);
+
+        if(!isMatch){
+            res.status(400).json({
+                msg: "Invalid credentials"
+            });
+        }
+
+        const token = jwt.sign({
+            id: foundUser.id
+        }, JWT_SECRET);
+
+        res.setHeader("Authorization", `Bearer ${token}`);
+
+        res.status(200).json({ msg: "Login successful" });
+        
+    } catch(error){
+        console.error("Something went wrong ", error);
+        res.status(500).json({
+            msg: "Error while login user"
+        }) 
+    }
+
+} 
+
 export {
-    signup
+    signup,
+    signin
 }
